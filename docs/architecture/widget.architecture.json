@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Codex Gauge · архитектура", "quality_profile": "showcase" },
+  "components": [
+    { "id": "gauge-window", "type": "frontend", "label": "Плавающий виджет", "sublabel": "WPF · шкала 0–100", "pos": [60, 100], "size": [210, 80] },
+    { "id": "quota-model", "type": "backend", "label": "Состояние лимитов", "sublabel": "Остаток и свежесть данных", "pos": [490, 100], "size": [230, 80] },
+    { "id": "rpc-client", "type": "backend", "label": "Клиент App Server", "sublabel": "Опрос каждые 10 секунд", "pos": [490, 360], "size": [230, 80] },
+    { "id": "codex-server", "type": "external", "label": "Codex App Server", "sublabel": "Штатная авторизация Codex", "pos": [60, 360], "size": [230, 80] },
+    { "id": "openai-service", "type": "cloud", "label": "Сервис Codex", "sublabel": "Лимиты аккаунта ChatGPT", "pos": [60, 610], "size": [230, 80] },
+    { "id": "preferences", "type": "database", "label": "Настройки виджета", "sublabel": "Позиция, размер, окно лимита", "pos": [920, 100], "size": [245, 80] }
+  ],
+  "connections": [
+    { "id": "display-quota", "from": "quota-model", "to": "gauge-window", "label": "Показания" },
+    { "id": "parse-quota", "from": "rpc-client", "to": "quota-model", "label": "Снимок лимитов" },
+    { "id": "read-limits", "from": "rpc-client", "to": "codex-server", "label": "JSON-RPC / stdio" },
+    { "id": "fetch-limits", "from": "codex-server", "to": "openai-service", "label": "HTTPS", "labelDy": 60 },
+    { "id": "save-settings", "from": "quota-model", "to": "preferences", "label": "Выбор окна" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Показания", "items": ["Остаток = 100 − usedPercent", "Период определяется windowDurationMins"] },
+    { "dot": "amber", "title": "Состояние подключения", "items": ["Ошибка не превращается в нулевой остаток", "Вход выполняется средствами Codex"] }
+  ]
+}
