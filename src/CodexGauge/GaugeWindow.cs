@@ -98,9 +98,10 @@ public sealed class GaugeWindow : Window
         if (check.HasValue) { item.IsCheckable = true; item.IsChecked = check.Value; }
         item.Click += (_, _) => action(); return item;
     }
-    private ContextMenu CreateMenu()
+    internal ContextMenu CreateMenu()
     {
-        var menu = new ContextMenu { Background = new SolidColorBrush(Color.FromRgb(23, 34, 46)), Foreground = Brushes.White, BorderBrush = new SolidColorBrush(Color.FromRgb(56, 74, 90)), Padding = new Thickness(6) };
+        var menu = new ContextMenu();
+        menu.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("MenuTheme.xaml", UriKind.Relative) });
         menu.Items.Add(new MenuItem { Header = "CODEX GAUGE  ·  каждые 10 сек", IsEnabled = false });
         menu.Items.Add(new Separator());
         foreach (var w in windows)

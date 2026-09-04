@@ -28,6 +28,29 @@ public static class Program
             catch (Exception e) { File.WriteAllText(args[1], JsonSerializer.Serialize(new { ok = false, error = e is CodexException ? e.Message : e.GetType().Name })); return 1; }
         }
         var app = new Application { ShutdownMode = ShutdownMode.OnMainWindowClose };
+        if (args.Length >= 2 && args[0] == "--render-menu")
+        {
+            var preview = new GaugeWindow(true);
+            preview.Loaded += async (_, _) =>
+            {
+                var menu = preview.CreateMenu();
+                menu.PlacementTarget = preview.Face; menu.IsOpen = true;
+                await preview.Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+                var sizes = menu.Items.OfType<System.Windows.Controls.MenuItem>().Single(i => Equals(i.Header, "Размер"));
+                sizes.IsSubmenuOpen = true;
+                await System.Threading.Tasks.Task.Delay(250);
+                menu.UpdateLayout();
+                Capture(menu, args[1] + ".png");
+                var popup = (System.Windows.Controls.Primitives.Popup)sizes.Template.FindName("PART_Popup", sizes);
+                var panel = (FrameworkElement)popup.Child;
+                panel.UpdateLayout(); Capture(panel, args[1] + "-submenu.png");
+                sizes.Items.OfType<System.Windows.Controls.MenuItem>().First().Focus();
+                await preview.Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.ContextIdle);
+                Capture(panel, args[1] + "-highlight.png");
+                menu.IsOpen = false; preview.Close();
+            };
+            return app.Run(preview);
+        }
         if (args.Length >= 2 && args[0] is "--render" or "--smoke")
         {
             var live = args[0] == "--smoke";
