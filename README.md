@@ -12,22 +12,47 @@
 
 ## Быстрый запуск
 
-Понадобятся Windows, установленный Codex со входом через ChatGPT и [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0). В GitHub Releases пока нет готовой сборки. Выполните в PowerShell.
+**Через установщик.** Запустите `CodexGauge-Setup-x64.exe` на Windows 10 или 11 x64 и откройте **Codex Gauge** в меню «Пуск». Мастер устанавливает виджет в `%LOCALAPPDATA%\Programs\CodexGauge` для текущего пользователя. .NET входит в комплект. Права администратора и интернет для самой установки не нужны. Для чтения лимитов нужен установленный Codex со входом через ChatGPT.
+
+Перед обновлением или удалением закройте виджет через **«Выход»** в трее. Удалить его можно через список установленных приложений Windows. Настройки виджета сохраняются.
+
+Установщик собирается в `dist\CodexGauge-Setup-x64.exe`. Готового файла в GitHub Releases пока нет.
+
+<details>
+<summary>Собрать установщик из исходников</summary>
+
+Понадобятся [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) и [NSIS 3](https://nsis.sourceforge.io/Download). Клонируйте репозиторий и выполните в PowerShell.
 
 ```powershell
 git clone https://github.com/Mikhail-068/Codex-Limit.git
 Set-Location Codex-Limit
+.\installer\Build-Setup.ps1
+```
 
+Если используете переносимый NSIS, укажите путь к компилятору. После сборки скрипт выведет SHA-256 установщика.
+
+```powershell
+.\installer\Build-Setup.ps1 -MakeNsis 'C:\Tools\NSIS\makensis.exe'
+```
+
+</details>
+
+<details>
+<summary>Собрать и запустить виджет напрямую</summary>
+
+После клонирования репозитория или распаковки архива **Code → Download ZIP** откройте PowerShell в папке исходников. Для сборки нужен .NET 8 SDK.
+
+```powershell
 dotnet publish .\src\CodexGauge\CodexGauge.csproj -c Release `
   -o .\dist\CodexGauge --self-contained false
 
 .\dist\CodexGauge\CodexGauge.exe
 ```
 
-Исходники можно получить через **Code → Download ZIP**. Распакуйте архив и откройте PowerShell в распакованной папке, затем выполните команды сборки и запуска.
-
 > [!TIP]
-> Для переноса на другой ПК скопируйте целиком папку `dist\CodexGauge`. На новом ПК понадобятся **.NET 8 Desktop Runtime** под его архитектуру и Codex с выполненным входом. Запустите `CodexGauge.exe` из этой папки. Отдельный установщик виджета и права администратора для его запуска не нужны.
+> Для переноса этой сборки на другой ПК скопируйте целиком папку `dist\CodexGauge`. На новом ПК понадобятся **.NET 8 Desktop Runtime** под его архитектуру и Codex с выполненным входом.
+
+</details>
 
 ## Как читать шкалу
 
@@ -70,7 +95,7 @@ dotnet publish .\src\CodexGauge\CodexGauge.csproj -c Release `
 | **«Codex не найден»** | Запустите настольный Codex или задайте путь к `codex.exe` по инструкции ниже. |
 | **«Нет связи с Codex»** | Проверьте интернет и работу Codex. Затем выберите **«Обновить сейчас»** или дождитесь следующей проверки. |
 | **Виджет скрылся** | Дважды нажмите на бензоколонку в трее. Значок может находиться в списке скрытых значков. |
-| **Windows просит установить .NET** | Установите [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) под архитектуру сборки. |
+| **Windows просит установить .NET** | Для прямого запуска установите [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) под архитектуру сборки. Мастер установки включает собственную .NET. |
 
 <details>
 <summary>Ручной путь к Codex и сброс настроек</summary>
